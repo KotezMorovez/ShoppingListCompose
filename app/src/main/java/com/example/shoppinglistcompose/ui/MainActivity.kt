@@ -1,4 +1,4 @@
-package com.example.shoppinglistcompose.ui.feature.main
+package com.example.shoppinglistcompose.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -7,8 +7,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import com.example.shoppinglistcompose.ui.feature.shoppinglist.MainScreen
 import com.example.shoppinglistcompose.ui.theme.ShoppingListComposeTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

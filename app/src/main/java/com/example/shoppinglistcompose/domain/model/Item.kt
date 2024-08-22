@@ -1,7 +1,7 @@
-package com.example.shoppinglistcompose.ui.model
+package com.example.shoppinglistcompose.domain.model
 
-data class ItemUI(
-    val id: String,
+data class Item(
+    val id: Int,
     val image: String,
     val name: String,
     val category: String,

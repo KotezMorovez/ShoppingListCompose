@@ -1,4 +1,4 @@
-package com.example.shoppinglistcompose.ui.feature.main
+package com.example.shoppinglistcompose.ui.feature.shoppinglist
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -40,6 +40,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,19 +53,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.shoppinglistcompose.R
-import com.example.shoppinglistcompose.ui.model.ItemListMock
-import com.example.shoppinglistcompose.ui.model.ItemUI
+import com.example.shoppinglistcompose.domain.model.Item
 import com.example.shoppinglistcompose.ui.theme.Grey80
 
-@Preview(showBackground = true)
 @Composable
-fun MainScreen() {
+fun MainScreen(viewModel: ShoppingListViewModel = hiltViewModel()) {
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -73,7 +72,7 @@ fun MainScreen() {
     )
     {
         MyAppBar(title = stringResource(id = R.string.toolbar_title))
-        MyRecyclerView(ItemListMock.list)
+        MyRecyclerView(viewModel)
     }
 }
 
@@ -103,7 +102,9 @@ private fun MyAppBar(title: String, fontSize: Int = 20) {
 }
 
 @Composable
-private fun MyRecyclerView(list: List<ItemUI>) {
+private fun MyRecyclerView(viewModel: ShoppingListViewModel) {
+    val itemsList by viewModel.itemsList.collectAsState()
+
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp),
@@ -111,13 +112,15 @@ private fun MyRecyclerView(list: List<ItemUI>) {
         userScrollEnabled = true
     ) {
         items(
-            items = list,
+            items = itemsList,
             key = { item ->
                 item.id
             },
             contentType = { null },
-            itemContent = {
-                ItemView(item = it)
+            itemContent = { it ->
+                ItemView(item = it) { id ->
+                    viewModel.deleteItem(id)
+                }
             }
         )
     }
@@ -125,7 +128,7 @@ private fun MyRecyclerView(list: List<ItemUI>) {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-private fun ItemView(item: ItemUI) {
+private fun ItemView(item: Item, deleteItemAction: ((id: Int) -> Unit)) {
     var expanded by remember { mutableStateOf(false) }
 
     Card(
@@ -203,14 +206,18 @@ private fun ItemView(item: ItemUI) {
                 ) {
                     ItemOptionMenu(
                         expanded = expanded,
-                        item = item,
                         modifier = Modifier.animateEnterExit(
                             enter = fadeIn() + expandIn(spring()),
                             exit = fadeOut() + shrinkOut(spring())
                         ),
                         closeAction = {
                             expanded = false
-
+                        },
+                        deleteAction = {
+                            deleteItemAction.invoke(item.id)
+                        },
+                        editAction = {
+//                            viewModel.editItem(item)
                         }
                     )
                 }
@@ -220,7 +227,13 @@ private fun ItemView(item: ItemUI) {
 }
 
 @Composable
-fun ItemOptionMenu(expanded: Boolean, item: ItemUI, modifier: Modifier, closeAction: () -> Unit) {
+fun ItemOptionMenu(
+    expanded: Boolean,
+    modifier: Modifier,
+    closeAction: () -> Unit,
+    deleteAction: () -> Unit,
+    editAction: () -> Unit
+) {
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = closeAction,
@@ -234,7 +247,8 @@ fun ItemOptionMenu(expanded: Boolean, item: ItemUI, modifier: Modifier, closeAct
                 )
             },
             onClick = {
-                // Show alert dialog
+                // Show edit screen with crossfade animation
+                editAction.invoke()
                 closeAction.invoke()
             }
         )
@@ -246,7 +260,7 @@ fun ItemOptionMenu(expanded: Boolean, item: ItemUI, modifier: Modifier, closeAct
                 )
             },
             onClick = {
-                // viewModel.delete(item)
+                deleteAction.invoke()
                 closeAction.invoke()
             }
         )
