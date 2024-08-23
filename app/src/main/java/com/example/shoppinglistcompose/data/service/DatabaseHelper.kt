@@ -3,6 +3,7 @@ package com.example.shoppinglistcompose.data.service
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.example.shoppinglistcompose.domain.model.Item
 import javax.inject.Inject
 
 class DatabaseHelper @Inject constructor(
@@ -16,11 +17,11 @@ class DatabaseHelper @Inject constructor(
     override fun onCreate(db: SQLiteDatabase?) {
         db?.execSQL(
             "create table if not exists $DATABASE_TABLE ("
-                    + "id integer primary key autoincrement,"
-                    + "name text not null,"
-                    + "category text not null,"
-                    + "cost text not null,"
-                    + "image text not null default \"\""
+                    + "${Item.ID} integer primary key autoincrement,"
+                    + "${Item.NAME} text not null,"
+                    + "${Item.CATEGORY} text not null,"
+                    + "${Item.COST} text not null,"
+                    + "${Item.IMAGE} text not null default \"\""
                     + ");"
         )
     }

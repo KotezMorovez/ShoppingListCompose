@@ -13,7 +13,7 @@ import javax.inject.Inject
 class ShoppingListViewModel @Inject constructor(
     private val shoppingListRepository: ShoppingListRepository
 ) : ViewModel() {
-    private val _itemsList = MutableStateFlow<List<Item>>(ItemListMock.list)
+    private val _itemsList = MutableStateFlow<List<Item>>(listOf())
     val itemsList = _itemsList.asStateFlow()
 
     fun addItem(item: Item) {
@@ -30,6 +30,7 @@ class ShoppingListViewModel @Inject constructor(
     }
 
     fun getItems() {
-        _itemsList.value = shoppingListRepository.getItems()
+//        _itemsList.value = shoppingListRepository.getItems()
+        _itemsList.value = ItemListMock.list
     }
 }

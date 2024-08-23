@@ -18,12 +18,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 interface BindModule {
-    @Binds
     @Reusable
+    @Binds
     fun bindRepository(impl: ShoppingListRepositoryImpl): ShoppingListRepository
 
+    @Singleton
     @Binds
-    @Reusable
     fun bindService(impl: ShoppingListServiceImpl): ShoppingListService
 }
 

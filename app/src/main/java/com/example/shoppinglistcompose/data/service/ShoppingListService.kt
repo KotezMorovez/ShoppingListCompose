@@ -29,7 +29,7 @@ class ShoppingListServiceImpl @Inject constructor(
         database.update(
             DATABASE_TABLE,
             contentValues,
-            "$ITEM_ID = ?",
+            "$Item.ID = ?",
             arrayOf(item.id.toString())
         )
 
@@ -37,7 +37,7 @@ class ShoppingListServiceImpl @Inject constructor(
     }
 
     override fun deleteItem(id: Int): List<Item> {
-        database.delete(DATABASE_TABLE, "$ITEM_ID == ?", arrayOf(id.toString()))
+        database.delete(DATABASE_TABLE, "$Item.ID == ?", arrayOf(id.toString()))
         return getItems()
     }
 
@@ -55,11 +55,11 @@ class ShoppingListServiceImpl @Inject constructor(
         )
 
         if (cursor.moveToFirst()) {
-            val idColumnIndex = cursor.getColumnIndex(ITEM_ID)
-            val nameColumnIndex = cursor.getColumnIndex(ITEM_NAME)
-            val costColumnIndex = cursor.getColumnIndex(ITEM_COST)
-            val categoryColumnIndex = cursor.getColumnIndex(ITEM_CATEGORY)
-            val imageColumnIndex = cursor.getColumnIndex(ITEM_IMAGE)
+            val idColumnIndex = cursor.getColumnIndex(Item.ID)
+            val nameColumnIndex = cursor.getColumnIndex(Item.NAME)
+            val costColumnIndex = cursor.getColumnIndex(Item.COST)
+            val categoryColumnIndex = cursor.getColumnIndex(Item.CATEGORY)
+            val imageColumnIndex = cursor.getColumnIndex(Item.IMAGE)
 
             do {
                 list.add(
@@ -81,20 +81,15 @@ class ShoppingListServiceImpl @Inject constructor(
     private fun createAndFillContentValues(item: Item): ContentValues {
         val contentValues = ContentValues()
 
-        contentValues.put(ITEM_NAME, item.name)
-        contentValues.put(ITEM_COST, item.cost)
-        contentValues.put(ITEM_CATEGORY, item.category)
-        contentValues.put(ITEM_IMAGE, item.image)
+        contentValues.put(Item.NAME, item.name)
+        contentValues.put(Item.COST, item.cost)
+        contentValues.put(Item.CATEGORY, item.category)
+        contentValues.put(Item.IMAGE, item.image)
 
         return contentValues
     }
 
     companion object {
         private const val DATABASE_TABLE = "shopping_list_table"
-        private const val ITEM_ID = "id"
-        private const val ITEM_NAME = "name"
-        private const val ITEM_COST = "cost"
-        private const val ITEM_CATEGORY = "category"
-        private const val ITEM_IMAGE = "image"
     }
 }
