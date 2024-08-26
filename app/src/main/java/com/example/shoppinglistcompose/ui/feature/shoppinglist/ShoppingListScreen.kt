@@ -19,16 +19,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
@@ -55,23 +52,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
+import coil.imageLoader
+import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.example.shoppinglistcompose.R
 import com.example.shoppinglistcompose.domain.model.Item
-import com.example.shoppinglistcompose.ui.MainActivity
-import com.example.shoppinglistcompose.ui.feature.newItem.NewItemScreen
 import com.example.shoppinglistcompose.ui.theme.Grey80
+import kotlinx.coroutines.Dispatchers
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -151,6 +145,19 @@ private fun ItemView(
     editItemAction: (item: Item) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val painter = rememberAsyncImagePainter(
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(item.image)
+            .dispatcher(Dispatchers.IO)
+            .diskCacheKey(item.image)
+            .memoryCacheKey(item.image)
+            .diskCachePolicy(CachePolicy.READ_ONLY)
+            .memoryCachePolicy(CachePolicy.READ_ONLY)
+            .build(),
+        placeholder = painterResource(id = R.drawable.ic_placeholder),
+        error = painterResource(id = R.drawable.ic_launcher_foreground), //fixme
+        imageLoader = LocalContext.current.imageLoader
+    )
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -163,13 +170,6 @@ private fun ItemView(
                 .height(IntrinsicSize.Max),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val painter = rememberAsyncImagePainter(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(item.image)
-                    .placeholder(R.drawable.ic_placeholder)
-                    .build()
-            )
-
             Image(
                 painter = painter,
                 contentDescription = "item image",

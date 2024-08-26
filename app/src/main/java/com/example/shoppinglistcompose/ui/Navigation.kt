@@ -2,16 +2,13 @@ package com.example.shoppinglistcompose.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.shoppinglistcompose.domain.model.Item
 import com.example.shoppinglistcompose.ui.feature.newItem.NewItemScreen
 import com.example.shoppinglistcompose.ui.feature.shoppinglist.MainScreen
 
@@ -23,8 +20,6 @@ enum class ShoppingListScreens {
 
 @Composable
 fun ShoppingListApp(navController: NavHostController = rememberNavController()) {
-    val backStackEntry by navController.currentBackStackEntryAsState()
-
     NavHost(
         navController = navController,
         startDestination = ShoppingListScreens.SHOPPING_LIST.name,
@@ -38,7 +33,8 @@ fun ShoppingListApp(navController: NavHostController = rememberNavController()) 
                 },
                 onOptionMenuEditItemClicked = {
                     navController.navigate(
-                        route = ShoppingListScreens.EDIT.name)
+                        route = ShoppingListScreens.EDIT.name
+                    )
                 }
             )
         }
@@ -48,12 +44,14 @@ fun ShoppingListApp(navController: NavHostController = rememberNavController()) 
                 type = NavType.ReferenceType
             })
         ) {
-            val item: Item? = it.arguments?.getParcelable("item")
-            // TODO: add fun call for edit item screen
+//            val item: Item? = it.arguments?.getParcelable("item")
+//            TODO: add function call for edit item screen
         }
         composable(route = ShoppingListScreens.CREATE.name) {
             NewItemScreen(
-                onBackClickListener = { navController.navigateUp() }
+                onBackClickListener = {
+                    navController.navigateUp()
+                }
             )
         }
     }

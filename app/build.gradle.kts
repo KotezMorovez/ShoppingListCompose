@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose.viewModel)
 
 //  Coil
+    implementation (libs.coil)
     implementation(libs.coil.compose)
 
 //  Hilt
