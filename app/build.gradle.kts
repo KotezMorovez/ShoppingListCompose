@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kapt)
     alias(libs.plugins.daggerHilt)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.jetbrainsKotlinPluginParcelize)
 }
 
 android {

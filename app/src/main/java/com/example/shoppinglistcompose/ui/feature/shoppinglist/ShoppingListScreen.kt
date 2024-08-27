@@ -19,13 +19,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
@@ -57,14 +60,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.shoppinglistcompose.R
 import com.example.shoppinglistcompose.domain.model.Item
+import com.example.shoppinglistcompose.ui.MainActivity
+import com.example.shoppinglistcompose.ui.feature.newItem.NewItemScreen
 import com.example.shoppinglistcompose.ui.theme.Grey80
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(viewModel: ShoppingListViewModel = hiltViewModel()) {
+fun MainScreen(
+    viewModel: ShoppingListViewModel = hiltViewModel(),
+    onCreateButtonClicked: () -> Unit,
+    onOptionMenuEditItemClicked: (item: Item) -> Unit
+) {
+    val itemsList by viewModel.itemsList.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -75,64 +92,64 @@ fun MainScreen(viewModel: ShoppingListViewModel = hiltViewModel()) {
             viewModel.getItems()
         }
 
-        MyAppBar(title = stringResource(id = R.string.toolbar_title))
-        MyRecyclerView(viewModel)
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun MyAppBar(title: String, fontSize: Int = 20) {
-    TopAppBar(
-        title = {
-            Text(
-                text = title,
-                fontSize = fontSize.sp,
-                fontWeight = FontWeight.Bold
-            )
-        },
-        actions = {
-            IconButton(onClick = {}) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "Create",
-                    tint = Color.Black
+        TopAppBar(
+            title = {
+                Text(
+                    text = stringResource(id = R.string.toolbar_title),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
                 )
-            }
-        },
-        windowInsets = TopAppBarDefaults.windowInsets,
-        colors = TopAppBarDefaults.topAppBarColors()
-    )
-}
-
-@Composable
-private fun MyRecyclerView(viewModel: ShoppingListViewModel) {
-    val itemsList by viewModel.itemsList.collectAsState()
-
-    LazyColumn(
-        modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        userScrollEnabled = true
-    ) {
-        items(
-            items = itemsList,
-            key = { item ->
-                item.id
             },
-            contentType = { null },
-            itemContent = { it ->
-                ItemView(item = it) { id ->
-                    viewModel.deleteItem(id)
+            actions = {
+                IconButton(onClick = {
+                    onCreateButtonClicked.invoke()
+                }) {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Create",
+                        tint = Color.Black
+                    )
                 }
-            }
+            },
+            windowInsets = TopAppBarDefaults.windowInsets,
+            colors = TopAppBarDefaults.topAppBarColors()
         )
+
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            userScrollEnabled = true
+        ) {
+            items(
+                items = itemsList,
+                key = { item ->
+                    item.id
+                },
+                contentType = { null },
+                itemContent = { it ->
+                    ItemView(
+                        item = it,
+                        deleteItemAction = { id ->
+                            viewModel.deleteItem(id)
+                        },
+                        editItemAction = {
+                            onOptionMenuEditItemClicked.invoke(it)
+                        }
+                    )
+                }
+            )
+        }
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-private fun ItemView(item: Item, deleteItemAction: ((id: Int) -> Unit)) {
+private fun ItemView(
+    item: Item,
+    deleteItemAction: (id: Int) -> Unit,
+    editItemAction: (item: Item) -> Unit
+) {
     var expanded by remember { mutableStateOf(false) }
 
     Card(
@@ -221,6 +238,7 @@ private fun ItemView(item: Item, deleteItemAction: ((id: Int) -> Unit)) {
                             deleteItemAction.invoke(item.id)
                         },
                         editAction = {
+                            editItemAction.invoke(item)
 //                            viewModel.editItem(item)
                         }
                     )
@@ -251,7 +269,6 @@ fun ItemOptionMenu(
                 )
             },
             onClick = {
-                // Show edit screen with crossfade animation
                 editAction.invoke()
                 closeAction.invoke()
             }
