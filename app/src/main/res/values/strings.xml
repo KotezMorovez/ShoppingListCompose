@@ -3,6 +3,9 @@
     <string name="toolbar_title">"Shopping List"</string>
     <string name="shopping_list_menu_edit">Изменить</string>
     <string name="shopping_list_menu_delete">Удалить</string>
+    <string name="shopping_list_dialog_text">Вы действительно хотите удалить эту позицию из списка?</string>
+    <string name="shopping_list_dialog_confirm">Да</string>
+    <string name="shopping_list_dialog_dismiss">Нет</string>
 
     <string name="new_item_title">Добавить новый товар</string>
     <string name="new_item_error_toast">Проверьте, все ли поля заполнены</string>
