@@ -5,6 +5,7 @@
     <string name="shopping_list_menu_delete">Удалить</string>
 
     <string name="new_item_title">Добавить новый товар</string>
+    <string name="new_item_error_toast">Проверьте, все ли поля заполнены</string>
 
     <string name="enter_item_name">Введите название товара</string>
     <string name="enter_item_category">Введите категорию товара</string>

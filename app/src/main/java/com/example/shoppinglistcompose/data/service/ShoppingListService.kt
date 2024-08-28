@@ -29,7 +29,7 @@ class ShoppingListServiceImpl @Inject constructor(
         database.update(
             DATABASE_TABLE,
             contentValues,
-            "$Item.ID = ?",
+            "${Item.ID} = ?",
             arrayOf(item.id.toString())
         )
 
@@ -37,10 +37,9 @@ class ShoppingListServiceImpl @Inject constructor(
     }
 
     override fun deleteItem(id: Int): List<Item> {
-        database.delete(DATABASE_TABLE, "$Item.ID == ?", arrayOf(id.toString()))
+        database.delete(DATABASE_TABLE, "${Item.ID} == ?", arrayOf(id.toString()))
         return getItems()
     }
-
 
     override fun getItems(): List<Item> {
         val list = mutableListOf<Item>()

@@ -3,7 +3,6 @@ package com.example.shoppinglistcompose.ui.feature.shoppinglist
 import androidx.lifecycle.ViewModel
 import com.example.shoppinglistcompose.domain.model.Item
 import com.example.shoppinglistcompose.domain.ShoppingListRepository
-import com.example.shoppinglistcompose.domain.model.ItemListMock
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,13 +15,8 @@ class ShoppingListViewModel @Inject constructor(
     private val _itemsList = MutableStateFlow<List<Item>>(listOf())
     val itemsList = _itemsList.asStateFlow()
 
-    fun addItem(item: Item) {
-        _itemsList.value = shoppingListRepository.addItem(item)
-    }
-
     fun deleteItem(id: Int) {
-//        itemsList = shoppinglistRepository.deleteItem(id)
-        _itemsList.value = itemsList.value.filter { it.id != id }
+        _itemsList.value = shoppingListRepository.deleteItem(id)
     }
 
     fun editItem(item: Item) {
@@ -30,7 +24,6 @@ class ShoppingListViewModel @Inject constructor(
     }
 
     fun getItems() {
-//        _itemsList.value = shoppingListRepository.getItems()
-        _itemsList.value = ItemListMock.list
+        _itemsList.value = shoppingListRepository.getItems()
     }
 }
