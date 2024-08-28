@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -30,7 +29,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -62,7 +60,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import coil.imageLoader
@@ -78,7 +75,8 @@ import kotlinx.coroutines.Dispatchers
 fun MainScreen(
     viewModel: ShoppingListViewModel = hiltViewModel(),
     onCreateButtonClicked: () -> Unit,
-    onOptionMenuEditItemClicked: (item: Item) -> Unit
+    onOptionMenuEditItemClicked: (item: Item) -> Unit,
+    onItemClicked: (item: Item) -> Unit
 ) {
     val itemsList by viewModel.itemsList.collectAsState()
     var openDialog by remember { mutableStateOf(false) }
@@ -138,6 +136,9 @@ fun MainScreen(
                         },
                         editItemAction = {
                             onOptionMenuEditItemClicked.invoke(it)
+                        },
+                        onItemClicked = {
+                            onItemClicked.invoke(it)
                         }
                     )
                 }
@@ -193,7 +194,8 @@ fun MainScreen(
 private fun ItemView(
     item: Item,
     deleteItemAction: (id: Int) -> Unit,
-    editItemAction: (item: Item) -> Unit
+    editItemAction: (item: Item) -> Unit,
+    onItemClicked: (item: Item) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     val painter = rememberAsyncImagePainter(
@@ -213,7 +215,8 @@ private fun ItemView(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(Color.White)
+        colors = CardDefaults.cardColors(Color.White),
+        onClick = { onItemClicked.invoke(item) }
     ) {
         Row(
             modifier = Modifier
