@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -29,6 +30,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.outlined.Warning
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -57,6 +62,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import coil.imageLoader
@@ -75,6 +81,8 @@ fun MainScreen(
     onOptionMenuEditItemClicked: (item: Item) -> Unit
 ) {
     val itemsList by viewModel.itemsList.collectAsState()
+    var openDialog by remember { mutableStateOf(false) }
+    var deletionItemId by remember { mutableStateOf(0) }
 
     Column(
         modifier = Modifier
@@ -125,7 +133,8 @@ fun MainScreen(
                     ItemView(
                         item = it,
                         deleteItemAction = { id ->
-                            viewModel.deleteItem(id)
+                            deletionItemId = id
+                            openDialog = true
                         },
                         editItemAction = {
                             onOptionMenuEditItemClicked.invoke(it)
@@ -135,6 +144,48 @@ fun MainScreen(
             )
         }
     }
+
+    if (openDialog) {
+        AlertDialog(
+            icon = {
+                Icon(
+                    imageVector = Icons.Outlined.Warning,
+                    contentDescription = "Alert!"
+                )
+            },
+            onDismissRequest = { openDialog = false },
+            title = {
+                Text(
+                    text = stringResource(id = R.string.shopping_list_dialog_text),
+                    fontSize = 16.sp
+                )
+            },
+            confirmButton = {
+                Button({
+                    viewModel.deleteItem(deletionItemId)
+                    openDialog = false
+                }) {
+                    Text(
+                        text = stringResource(id = R.string.shopping_list_dialog_confirm),
+                        fontSize = 20.sp
+                    )
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        openDialog = false
+                    },
+                ) {
+                    Text(
+                        stringResource(id = R.string.shopping_list_dialog_dismiss),
+                        fontSize = 20.sp
+                    )
+                }
+            },
+        )
+    }
+
 }
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -155,7 +206,7 @@ private fun ItemView(
             .memoryCachePolicy(CachePolicy.READ_ONLY)
             .build(),
         placeholder = painterResource(id = R.drawable.ic_placeholder),
-        error = painterResource(id = R.drawable.ic_launcher_foreground), //fixme
+        error = painterResource(id = R.drawable.ic_placeholder),
         imageLoader = LocalContext.current.imageLoader
     )
 
