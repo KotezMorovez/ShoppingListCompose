@@ -9,6 +9,7 @@ interface ShoppingListService {
     fun editItem(item: Item): List<Item>
     fun deleteItem(id: Int): List<Item>
     fun getItems(): List<Item>
+    fun getItemById(id: Int): Item?
 }
 
 class ShoppingListServiceImpl @Inject constructor(
@@ -21,6 +22,35 @@ class ShoppingListServiceImpl @Inject constructor(
 
         database.insert(DATABASE_TABLE, null, contentValues)
         return getItems()
+    }
+
+    override fun getItemById(id: Int): Item? {
+        var item: Item? = null
+        val cursor = database.rawQuery(
+            "SELECT * FROM $DATABASE_TABLE WHERE ${Item.ID} = $id;",
+            null
+        )
+
+        cursor.moveToFirst()
+        
+        if (cursor.count > 0) {
+            val idColumnIndex = cursor.getColumnIndex(Item.ID)
+            val nameColumnIndex = cursor.getColumnIndex(Item.NAME)
+            val costColumnIndex = cursor.getColumnIndex(Item.COST)
+            val categoryColumnIndex = cursor.getColumnIndex(Item.CATEGORY)
+            val imageColumnIndex = cursor.getColumnIndex(Item.IMAGE)
+
+            item = Item(
+                id = cursor.getInt(idColumnIndex),
+                name = cursor.getString(nameColumnIndex),
+                cost = cursor.getString(costColumnIndex),
+                category = cursor.getString(categoryColumnIndex),
+                image = cursor.getString(imageColumnIndex)
+            )
+        }
+
+        cursor.close()
+        return item
     }
 
     override fun editItem(item: Item): List<Item> {

@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import androidx.core.net.toUri
+import com.example.shoppinglistcompose.domain.model.Item
 import java.io.File
 import java.io.FileOutputStream
 import java.util.UUID

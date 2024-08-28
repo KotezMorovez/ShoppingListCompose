@@ -9,4 +9,5 @@ interface ShoppingListRepository {
     fun editItem(item: Item): List<Item>
     fun getItems(): List<Item>
     fun addImageToCache(uri: Uri): Uri?
+    fun getItem(id: Int): Item?
 }
