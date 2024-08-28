@@ -57,13 +57,7 @@ fun DetailsScreen(
     itemId: Int?
 ) {
     val context = LocalContext.current
-    val item: Item? by remember {
-        if (itemId != null){
-            mutableStateOf(viewModel.getItem(itemId))}
-        else {
-            mutableStateOf(null)
-        }
-    }
+    val item: Item? by remember { mutableStateOf(itemId?.let { viewModel.getItem(it) })}
     Scaffold(
         topBar = {
             TopAppBar(
@@ -143,20 +137,20 @@ fun DetailsScreen(
 
 
             RowBlock(
-                title = "Название",
-                content = item?.name.toString(), //fixme
+                title = stringResource(id = R.string.details_screen_name_field),
+                content = item?.name ?: "",
                 Pair(0, 24)
             )
 
             RowBlock(
-                title = "Категория",
-                content = item?.category.toString(), //fixme
+                title = stringResource(id = R.string.details_screen_category_field),
+                content = item?.category ?: "",
                 Pair(0, 16)
             )
 
             RowBlock(
-                title = "Стоимость",
-                content = item?.cost.toString(), //fixme
+                title = stringResource(id = R.string.details_screen_cost_field),
+                content = item?.cost ?: "",
                 rowPaddings = Pair(0, 16),
             )
         }
