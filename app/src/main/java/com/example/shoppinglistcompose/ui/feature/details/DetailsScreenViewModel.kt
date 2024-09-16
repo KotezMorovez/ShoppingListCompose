@@ -12,7 +12,8 @@ class DetailsScreenViewModel @Inject constructor(
 ) : ViewModel() {
     fun getItem(id: Int): Item? {
         //fixme создать метод, в котором из БД будет получаться только айтем с подходящим id
-        val list = shoppingListRepository.getItems()
-        return list.find { it.id == id }
+//        val list = shoppingListRepository.getItems()
+//        return list.find { it.id == id }
+        return shoppingListRepository.getItem(id)
     }
 }

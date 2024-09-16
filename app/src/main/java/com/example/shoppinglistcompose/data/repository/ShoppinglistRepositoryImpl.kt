@@ -27,6 +27,10 @@ class ShoppingListRepositoryImpl @Inject constructor(
         return shoppingListService.getItems()
     }
 
+    override fun getItem(id: Int): Item? {
+        return shoppingListService.getItemById(id)
+    }
+
     override fun addImageToCache(uri: Uri): Uri? {
         return cacheService.addImageToCache(uri)
     }
